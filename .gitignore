@@ -1,0 +1,30 @@
+node_modules/
+.turbo/
+.next/
+out/
+dist/
+build/
+.expo/
+web-build/
+ios/
+android/
+*.tsbuildinfo
+next-env.d.ts
+
+# env: only .env.example is committed
+.env
+.env*.local
+.env.*
+!.env.example
+
+# supabase local
+supabase/.branches/
+supabase/.temp/
+
+.DS_Store
+Thumbs.db
+*.log
+.vercel
+
+# Team plan: shared privately, never committed
+PLAN.md
