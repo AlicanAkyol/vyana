@@ -1,0 +1,33 @@
+# Auto-requests reviews from the owner of each area (see PLAN.md §8).
+# Any teammate's approval is enough to merge; this file only routes review requests.
+
+*                                   @piyushgargog
+
+# Backend: API routes, server code, contracts, API client, mocks
+/apps/web/app/api/                  @piyushgargog
+/apps/web/lib/server/               @piyushgargog
+/packages/shared/src/contracts/     @piyushgargog
+/packages/shared/src/api/           @piyushgargog
+/packages/shared/src/mocks/         @piyushgargog
+/packages/shared/src/hooks/api/     @piyushgargog
+/.github/                           @piyushgargog
+
+# Database + data layer
+/supabase/                          @vaibhavparmarog
+/packages/shared/src/db/            @vaibhavparmarog
+/packages/shared/src/hooks/db/      @vaibhavparmarog
+/packages/shared/src/providers/     @vaibhavparmarog
+/packages/shared/src/constants.ts   @vaibhavparmarog
+/apps/web/lib/supabase/             @vaibhavparmarog
+/apps/web/proxy.ts                  @vaibhavparmarog
+/apps/web/lib/server/push.ts        @vaibhavparmarog
+/apps/mobile/src/lib/               @vaibhavparmarog
+/apps/mobile/eas.json               @vaibhavparmarog
+
+# Frontend: web + mobile UI
+/apps/web/app/(public)/             @arvindkushwaha55
+/apps/web/app/(app)/                @arvindkushwaha55
+/apps/web/components/               @arvindkushwaha55
+/apps/mobile/src/app/               @arvindkushwaha55
+/apps/mobile/src/components/        @arvindkushwaha55
+/apps/mobile/app.json               @arvindkushwaha55

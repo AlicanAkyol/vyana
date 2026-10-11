@@ -1,0 +1,22 @@
+name: Task
+description: A piece of planned work (from PLAN.md or new)
+labels: []
+body:
+  - type: input
+    id: task
+    attributes:
+      label: Task ID
+      description: PLAN.md task ID, e.g. P5, A2, V3. Leave empty for new work.
+  - type: textarea
+    id: what
+    attributes:
+      label: What needs to be done
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: How do we verify it is finished?
+    validations:
+      required: true
