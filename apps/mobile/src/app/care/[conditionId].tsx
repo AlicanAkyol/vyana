@@ -32,6 +32,7 @@ import { useVyanaMobile } from '@/components/providers';
 import {
   MobileAiSafetyBanner,
   MobileDisclaimerFooter,
+  MobileSkeletonCard,
   MobileTrendChart,
 } from '@/components/ui-primitives';
 
@@ -214,6 +215,11 @@ export default function ConditionCarePlanScreen() {
           </Text>
         </View>
       ) : null}
+
+      {/* Plan Loading Skeleton */}
+      {planLoading && (
+        <MobileSkeletonCard lines={4} />
+      )}
 
       {/* If No Plan Exists: Button to Generate Plan */}
       {!activePlan && !planLoading && (
