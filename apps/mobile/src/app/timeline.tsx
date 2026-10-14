@@ -21,6 +21,7 @@ import {
   Card,
   CardHeader,
   EmptyState,
+  ErrorState,
   Pill,
   Screen,
   Symbol,
@@ -101,7 +102,7 @@ export default function TimelineScreen() {
   const router = useRouter();
   const { baseUrl, showToast } = useVyanaMobile();
 
-  const { data: timeline = [], isLoading } = useTimeline();
+  const { data: timeline = [], isLoading, isError: timelineError, refetch: refetchTimeline } = useTimeline();
   const createShareMutation = useCreateShareLink();
 
   const [filter, setFilter] = useState<'all' | TimelineKind>('all');
@@ -266,6 +267,8 @@ export default function TimelineScreen() {
                 Building your timeline…
               </Text>
             </View>
+          ) : timelineError ? (
+            <ErrorState onRetry={() => refetchTimeline()} />
           ) : (
             <EmptyState
               ios="calendar"
