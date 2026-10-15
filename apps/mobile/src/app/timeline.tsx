@@ -169,7 +169,7 @@ export default function TimelineScreen() {
     <Screen title="Timeline" eyebrow="Health" scroll={false}>
       <FlatList
         data={filteredEntries}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => `${item.kind}:${item.id}`}
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
         removeClippedSubviews
