@@ -18,6 +18,34 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async headers() {
+    const cspDirectives = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob: https:",
+      "font-src 'self' data:",
+      "connect-src 'self' https://hrntnhyjylonvlxlguvd.supabase.co wss://hrntnhyjylonvlxlguvd.supabase.co",
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "object-src 'none'",
+      "upgrade-insecure-requests",
+    ];
+
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            // Report-Only first (issue #151): open every page, check the console for violations, then drop "-Report-Only".
+            key: "Content-Security-Policy-Report-Only",
+            value: cspDirectives.join("; "),
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
