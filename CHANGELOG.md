@@ -4,10 +4,14 @@ All notable changes to Vyana are recorded here. The format follows [Keep a Chang
 
 ## [Unreleased]
 
+### Added
+- The website has a "Download for Android" button (and an "Android app" link in the menu). `/download/android` sends the visitor to the .apk of the latest GitHub release.
+
 ### Removed
 - Medicine quality alerts (CDSCO): the alerts screen, `POST /api/alerts/check`, the TinyFish Monitor webhook and the `monitor:create` script. The `drug_alerts` and `tinyfish_monitors` tables stay in the database, unused.
 
 ### Changed
+- The website no longer offers "Install app" in mobile browsers (the web manifest uses `display: browser`), so visitors do not mistake it for the Android app.
 - Android app: the Today screen now greets you by name and time of day ("Good morning, Piyush") instead of showing an alert banner.
 
 ### Fixed
