@@ -11,6 +11,7 @@ import {
   useExportMyData,
   useMyProfile,
   isShareLinkActive,
+  shareLinkSubtitle,
   useRevokeShareLink,
   useShareLinks,
   useUpdateProfile,
@@ -338,8 +339,8 @@ export default function MobileProfileTab() {
             <ListRow
               key={link.token}
               icon={<IconTile ios="link" android="link" color="indigo" />}
-              title={`${link.kind} · ${link.token.slice(0, 8)}…`}
-              subtitle={`Expires ${new Date(link.expires_at).toLocaleString()}`}
+              title={`${link.kind === 'medical_id' ? 'Medical ID' : 'Timeline'} · ${link.token.slice(0, 8)}…`}
+              subtitle={shareLinkSubtitle(link)}
               trailing={
                 <Pressable
                   accessibilityRole="button"
