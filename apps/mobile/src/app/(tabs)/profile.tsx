@@ -25,6 +25,7 @@ import {
   ListRow,
   Screen,
   Sheet,
+  SosPill,
   Symbol,
   Text,
 } from '@/components/ui';
@@ -186,7 +187,10 @@ export default function MobileProfileTab() {
   };
 
   return (
-    <Screen inset={false}>
+    <Screen
+      title="Me"
+      trailing={<SosPill />}
+    >
       {/* Quick links */}
       <ListGroup header="Quick links">
         <ListRow
