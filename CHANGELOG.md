@@ -29,6 +29,7 @@ All notable changes to Vyana are recorded here. The format follows [Keep a Chang
 - Android app: the Today screen now greets you by name and time of day ("Good morning, Piyush") instead of showing an alert banner.
 
 ### Fixed
+- **Assistant markdown formatting (QA #221):** Chat answers on `/assistant` now render formatted Markdown (bold, italic, inline code, headings, bulleted/numbered lists, and tables) instead of showing raw Markdown syntax.
 - **Heading hierarchy (QA):** Section 3 of Terms of Service and Essential Medical Disclaimer on Privacy Policy now use an h2 matching sibling numbered sections, "On this page" uses sentence-case text, and Third-Party Data Processors on the Privacy Policy uses title-case h3 matching standard heading hierarchy for consistent screen-reader navigation (#219).
 - **Home page hero mockup (QA):** Removed the stale static date from the Today card preview inside the hero phone frame (#218).
 - **Lab reports error handling (QA):** `/reports/[id]` now validates UUIDs before querying and displays a friendly "Report not found" screen for invalid identifiers (such as `/reports/timeline`) instead of exposing raw database error messages or internal PostgreSQL types (#224).
