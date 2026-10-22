@@ -13,6 +13,7 @@ All notable changes to Vyana are recorded here. The format follows [Keep a Chang
 - Search engines can now find the public pages: the web app serves a sitemap listing the five public pages (`/`, `/login`, `/signup`, `/privacy`, `/terms`), its own robots rules (the public pages allowed; the signed-in app, `/api/` and the token share pages disallowed), and every public page declares its canonical URL.
 
 ### Fixed
+- A price check (basket or labs) no longer gives up on a pharmacy or lab whose agent waited a long time in the queue and then started: the queue deadline now counts only the wait, and a run that has started is timed by its own deadline from when it started (before, a job older than the queue deadline had every still-running agent cancelled and shown as "timeout", however recently it had started).
 - The refill date worked out for a prescription item (`computeItemRefill` in `@vyana/shared`) is now the local calendar date: the date was built as a local midnight and then read back through UTC, so in India it came out one day early (a pack starting 1 Oct, twice a day, 30 tablets said 15 Oct instead of 16 Oct).
 - The trend helper now decides its direction (up, down or about the same) from the unrounded change: a change just under a flat limit (for example 499.96 steps against a 500 limit) used to round up onto the limit and report as a rise or fall; the rounded number is unchanged and is used only for the words.
 - The Docker image now pins musl to 1.2.6-r3, the version that fixes CVE-2026-107891, until the base image ships it.
