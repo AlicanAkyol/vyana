@@ -4,6 +4,9 @@ All notable changes to Vyana are recorded here. The format follows [Keep a Chang
 
 ## [Unreleased]
 
+### Fixed
+- Error wording pass (U5): no screen says "Something went wrong" any more — the basket, care plan, prescription, report and upload errors now say what could not be loaded or finished and what to do next, and the phone's start-up loading screen says "Loading your Vyana…" under its spinner instead of showing a bare spinner. A scan test keeps the old phrase out of the apps.
+
 ### Added
 - A fixed-sentence trend helper for device readings (`computeTrend`, `describeTrend` in `@vyana/shared`): the 7-day average against the week before for steps, resting heart rate and sleep, with five fixed sentences, no model and no judging words.
 - README "Screens" section with the home page at desktop (1366 px) and phone (390 px) sizes in `docs/images/`, plus `docs/images/capture-screens.mjs` — one command that captures the remaining app screens (Today, Ask Vyana, scan result, care plan, interactions, blood, SOS) at both sizes once it is given the demo patient's login, and the checklist every image must pass (demo data only, no keys or server addresses, under 300 KB).
