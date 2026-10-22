@@ -35,4 +35,7 @@ PLAN.md
 pr-screenshots/
 
 # Private backend docs: never committed (see docs/README.md)
-docs/
+docs/*
+# Exception (#306): the README screenshots are public on purpose.
+!docs/images/
+!docs/images/**
