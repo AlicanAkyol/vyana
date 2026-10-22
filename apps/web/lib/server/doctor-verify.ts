@@ -1,6 +1,6 @@
 import "server-only";
 import type { AdminDoctorCheckReq, DoctorVerifyReq, DoctorVerifyRes } from "@vyana/shared";
-import { requireRole, type AuthedUser } from "./auth";
+import type { AuthedUser } from "./auth";
 import { councilKey, normalizeRegNo } from "./doctor-register";
 import { badRequest, notFound } from "./errors";
 import { log } from "./log";
@@ -25,8 +25,7 @@ const isUniqueViolation = (err: unknown): boolean =>
   typeof err === "object" && err !== null && (err as { code?: unknown }).code === "23505";
 
 /** A doctor sends their registration details. Stays `pending` until an admin checks them. */
-export async function submitDoctorRegistration({ sb, user, profile }: AuthedUser, body: DoctorVerifyReq): Promise<DoctorVerifyRes> {
-  requireRole(profile, "doctor");
+export async function submitDoctorRegistration({ sb, user }: AuthedUser, body: DoctorVerifyReq): Promise<DoctorVerifyRes> {
   const { data: doctor, error } = await sb
     .from("doctors")
     .select("id, reg_no, state_council, year_of_registration, verification_status")
@@ -67,8 +66,7 @@ export async function submitDoctorRegistration({ sb, user, profile }: AuthedUser
 }
 
 /** An admin records the outcome of checking a doctor's registration in the public register by hand. */
-export async function adminCheckDoctor({ user, profile }: AuthedUser, body: AdminDoctorCheckReq): Promise<DoctorVerifyRes> {
-  requireRole(profile, "admin");
+export async function adminCheckDoctor({ user }: AuthedUser, body: AdminDoctorCheckReq): Promise<DoctorVerifyRes> {
   const admin = supabaseAdmin();
   const checkedAt = new Date().toISOString();
 

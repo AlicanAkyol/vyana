@@ -229,6 +229,8 @@ describe("POST /api/doctors/verify", () => {
     // A patient gets 403, whichever body they send.
     db.rows.profiles[0].role = "patient";
     expect((await post(send)).status).toBe(403);
+    // The role is settled in the route, before the body is read: a patient is refused whatever the body holds.
+    expect((await post({ reg_no: "", state_council: "x" })).status).toBe(403);
     expect((await post({ doctor_id: USER_ID, decision: "approve", reg_no: "1", state_council: "Delhi Medical Council", year: null, note: "" })).status).toBe(403);
     // A doctor who sends an admin's body gets 400: `decision` is not part of what a doctor sends.
     asDoctor();
