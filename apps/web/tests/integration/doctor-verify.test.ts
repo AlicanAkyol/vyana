@@ -207,6 +207,17 @@ describe("POST /api/doctors/verify", () => {
     expect(row(OTHER_USER_ID)).toMatchObject({ verification_status: "verified", reg_no: "12345" });
   });
 
+  it("answers the same message, not a server error, when the database guard refuses the approval", async () => {
+    asAdmin();
+    db.rows.doctors = [{ id: THIRD_DOCTOR_ID, reg_no: "waiting", state_council: "Delhi Medical Council", verification_status: "pending", verified_at: null }];
+    db.failUpdate.add("doctors");
+    const res = await post({ doctor_id: THIRD_DOCTOR_ID, decision: "approve", reg_no: "12345", state_council: "Delhi Medical Council", year: 2011, note: "ok" });
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as { error: { message: string } };
+    expect(body.error.message).toBe("This registration is already linked to another account.");
+    expect(row(THIRD_DOCTOR_ID)).toMatchObject({ verification_status: "pending" });
+  });
+
   it("answers 404 when an admin checks a doctor who does not exist", async () => {
     asAdmin();
     db.rows.doctors = [];

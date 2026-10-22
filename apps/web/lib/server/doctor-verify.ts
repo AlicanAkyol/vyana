@@ -20,6 +20,10 @@ interface DoctorRow {
   verification_status: DoctorVerifyRes["status"];
 }
 
+/** True when the database refused a save as a duplicate (Postgres 23505) — here, the verified-registration guard of migration 0022. */
+const isUniqueViolation = (err: unknown): boolean =>
+  typeof err === "object" && err !== null && (err as { code?: unknown }).code === "23505";
+
 /** A doctor sends their registration details. Stays `pending` until an admin checks them. */
 export async function submitDoctorRegistration({ sb, user, profile }: AuthedUser, body: DoctorVerifyReq): Promise<DoctorVerifyRes> {
   requireRole(profile, "doctor");
@@ -110,7 +114,12 @@ export async function adminCheckDoctor({ user, profile }: AuthedUser, body: Admi
       verification_json: verificationJson,
     })
     .eq("id", body.doctor_id);
-  if (saveError) throw saveError;
+  if (saveError) {
+    // Two approvals of the same number at the same moment: the check above passed for both and the
+    // database guard (migration 0022) refused this save. Same answer as the check above, not a server error.
+    if (isUniqueViolation(saveError)) throw badRequest("This registration is already linked to another account.");
+    throw saveError;
+  }
   log({ event: "doctor_check", status: "verified" });
   return { status: "verified", match: null, checked_at: checkedAt };
 }
