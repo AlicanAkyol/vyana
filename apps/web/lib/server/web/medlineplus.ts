@@ -1,8 +1,8 @@
 import "server-only";
 import { TTL, cached, normalizeKeyPart } from "../cache";
 import { log } from "../log";
-import { decodeEntities } from "./fetch-page";
 import { isOnDomain, isWebMock } from "./domains";
+import { decodeEntities, readTextCapped } from "./fetch-page";
 
 /**
  * Health topic search of MedlinePlus (US National Library of Medicine), a free public web service (ADR-072). It replaces the
@@ -31,14 +31,14 @@ const stripTags = (s: string): string => {
   return out;
 };
 
-/** The content of `<content name="…">…</content>` inside one document block, as plain text. */
+/** The content of `<content name="...">...</content>` inside one document block, as plain text. */
 function contentOf(block: string, name: string): string {
   const open = `<content name="${name}">`;
   const start = block.indexOf(open);
   if (start === -1) return "";
   const end = block.indexOf("</content>", start);
   if (end === -1) return "";
-  // The service escapes its markup (&lt;span …&gt;): decode once, then drop the tags.
+  // The service escapes its markup (&lt;span ...&gt;): decode once, then drop the tags.
   return stripTags(decodeEntities(block.slice(start + open.length, end))).replace(/\s+/g, " ").trim();
 }
 
@@ -78,8 +78,8 @@ export async function searchHealthTopics(query: string, limit = 5): Promise<Topi
         signal: AbortSignal.timeout(10_000),
       });
       if (!res.ok) return null;
-      const xml = await res.text();
-      if (xml.length > MAX_BYTES) return null;
+      const xml = await readTextCapped(res, MAX_BYTES);
+      if (xml === null) return null;
       const topics = parseTopics(xml, limit);
       return topics.length ? topics : null;
     });
