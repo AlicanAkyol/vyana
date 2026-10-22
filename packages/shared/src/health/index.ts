@@ -7,6 +7,7 @@ export * from "./reminders";
 export * from "./medical-id";
 export * from "./memory";
 export * from "./blood-request";
+export * from "./blood-banks";
 export * from "./hospital-search";
 export * from "./source-links";
 export * from "./qr";
