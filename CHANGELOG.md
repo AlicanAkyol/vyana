@@ -34,6 +34,7 @@ All notable changes to Vyana are recorded here. The format follows [Keep a Chang
 ### Fixed
 - Landing page and admin screens use the design system: the phone mockup cards are `Card`, the SOS tag is `Pill`, and the admin tabs use a token ring instead of arbitrary shadows (issue #430). The unused QR-lookalike `generateQrMatrix` is gone (issue #434).
 - Lab-value corrections no longer burn daily AI quota (issue #424): they are stored as audit rows with no model, and `my_ai_usage_today()` (migration 0023) now counts only rows that were model calls — the same number the daily limit checks.
+- The decorative phone mockup on the landing page is hidden from screen readers (`aria-hidden`), so its fictional doses and times are no longer announced as page content (issue #431); the visible "The Vyana app" caption remains the description.
 - A doctor's registration year is checked like the admin's check: years before 1950 or after the current year (India calendar) are rejected instead of being stored.
 - A doctor's own registration number is capped at 40 characters on submit, like the admin manual-check schema for the same column (unbounded values were storable before).
 - Lab report reading: a reference range the model wrote backwards (the low bound above the high bound, for example "100 - 70" where the report prints "70 - 100") no longer computes a wrong flag — the value is left unflagged and marked for review instead.
