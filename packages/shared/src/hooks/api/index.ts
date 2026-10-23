@@ -33,6 +33,7 @@ import type {
 import { QUERY_ROOTS } from "./query-roots";
 
 export { QUERY_ROOTS } from "./query-roots";
+export { useMyAgentProposals, useDecideAgentProposal } from "./agent-proposals";
 export { useCurrentPlanPage, useJoinWaitlistPage, usePlanAiUsageToday, useRefreshAiUsage } from "./plans";
 export * from "./devices";
 

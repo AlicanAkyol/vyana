@@ -3,6 +3,9 @@
 import type { ZodType } from "zod";
 
 import {
+  AgentDecideReq,
+  AgentDecideRes,
+  AgentProposalsRes,
   AiUsageTodayRes,
   ApiErrorBody,
   BloodSearchReq,
@@ -70,6 +73,8 @@ export type ApiClientOptions = {
 };
 
 export type ApiClient = {
+  /** Care agent proposals (#304, provisional contract): list what is pending; decide one. */
+  agentProposals: { list(): Promise<AgentProposalsRes>; decide(body: AgentDecideReq): Promise<AgentDecideRes> };
   /** RapidBlood: `search` starts a blood bank search job; poll `job(job_id)` until `status === "done"`. */
   blood: { search(body: BloodSearchReq): Promise<BloodSearchRes>; job(jobId: string): Promise<BloodSearchRes> };
   emergency: { nearby(body: EmergencyNearbyReq): Promise<EmergencyNearbyRes>; sos(body: EmergencySosReq): Promise<EmergencySosRes> };
@@ -199,6 +204,28 @@ export function createApiClient(opts: ApiClientOptions): ApiClient {
     request({ method: "POST", path, resSchema, mock, body: { schema: reqSchema, value } });
 
   return {
+    agentProposals: {
+      // Mock mode uses the stateful in-memory store (not the copied static fixture), so an approve
+      // or reject actually settles the card for the rest of the session (#304, mock-first).
+      list: async () => {
+        if (opts.useMocks) {
+          await sleep(minDelay + Math.random() * (maxDelay - minDelay));
+          return AgentProposalsRes.parse(JSON.parse(JSON.stringify(mocks.agentProposalsMock())));
+        }
+        return request({ method: "GET", path: "/api/agent/proposals", resSchema: AgentProposalsRes, mock: () => mocks.agentProposalsMock() });
+      },
+      decide: async (body) => {
+        const req = AgentDecideReq.safeParse(body);
+        if (!req.success) {
+          throw new ApiError("BAD_REQUEST", req.error.issues.map((i) => `${i.path.join(".") || "body"}: ${i.message}`).join("; "), 400);
+        }
+        if (opts.useMocks) {
+          await sleep(minDelay + Math.random() * (maxDelay - minDelay));
+          return AgentDecideRes.parse(mocks.agentDecideMock(req.data));
+        }
+        return post("/api/agent/proposals/decide", AgentDecideReq, AgentDecideRes, req.data, () => mocks.agentDecideMock(req.data));
+      },
+    },
     blood: {
       search: (body) => post("/api/blood/search", BloodSearchReq, BloodSearchRes, body, mocks.bloodJobRunningMock),
       job: (jobId) => {

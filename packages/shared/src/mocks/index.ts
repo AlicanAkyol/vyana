@@ -4,6 +4,7 @@ export { bloodSearchMock, bloodJobRunningMock } from "./blood";
 export { emergencyNearbyMock, mockHospitals } from "./emergency-nearby";
 export { emergencySosMock } from "./emergency-sos";
 export { doctorsVerifyMock } from "./doctors-verify";
+export { agentProposalsMock, agentDecideMock, visibleProposals, resetAgentProposalsMock } from "./agent-proposals";
 export {
   plansMock,
   freePlanMock,
