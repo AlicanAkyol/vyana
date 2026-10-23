@@ -33,6 +33,7 @@ import type {
 import { QUERY_ROOTS } from "./query-roots";
 
 export { QUERY_ROOTS } from "./query-roots";
+export { useCurrentPlanPage, useJoinWaitlistPage, usePlanAiUsageToday, useRefreshAiUsage } from "./plans";
 export * from "./devices";
 
 export function useSearchBlood() {

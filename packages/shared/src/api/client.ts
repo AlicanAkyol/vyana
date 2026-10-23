@@ -3,6 +3,7 @@
 import type { ZodType } from "zod";
 
 import {
+  AiUsageTodayRes,
   ApiErrorBody,
   BloodSearchReq,
   BloodSearchRes,
@@ -16,8 +17,11 @@ import {
   GenerateCarePlanRes,
   InteractionsReq,
   InteractionsRes,
+  JoinWaitlistReq,
+  JoinWaitlistRes,
   MeExportRes,
   OkRes,
+  PlansRes,
   PrescriptionExtractReq,
   PrescriptionExtractRes,
   ReportAnalyzeReq,
@@ -70,6 +74,10 @@ export type ApiClient = {
   blood: { search(body: BloodSearchReq): Promise<BloodSearchRes>; job(jobId: string): Promise<BloodSearchRes> };
   emergency: { nearby(body: EmergencyNearbyReq): Promise<EmergencyNearbyRes>; sos(body: EmergencySosReq): Promise<EmergencySosRes> };
   doctors: { verify(body: DoctorVerifyReq): Promise<DoctorVerifyRes> };
+  /** Plans, the Family waitlist and today's AI usage (#305, provisional contract). */
+  plans: { current(): Promise<PlansRes> };
+  waitlist: { join(body: JoinWaitlistReq): Promise<JoinWaitlistRes> };
+  aiUsage: { today(): Promise<AiUsageTodayRes> };
   prescriptions: { extract(body: PrescriptionExtractReq): Promise<PrescriptionExtractRes> };
   reports: { analyze(body: ReportAnalyzeReq): Promise<ReportAnalyzeRes>; correctValue(body: LabValueCorrectReq): Promise<LabValueCorrectRes> };
   carePlans: { generate(body: GenerateCarePlanReq): Promise<GenerateCarePlanRes> };
@@ -100,7 +108,9 @@ type RequestSpec<Res> = {
   method: "GET" | "POST" | "DELETE";
   path: string;
   resSchema: ZodType<Res>;
-  mock: Res;
+  /** A mock value, or a thunk producing one — a thunk is only called in mock mode, so a
+   *  mock with side effects (a store write) never runs against the real API. */
+  mock: Res | (() => Res);
   body?: { schema: ZodType<unknown>; value: unknown };
   auth?: boolean;
 };
@@ -129,7 +139,8 @@ export function createApiClient(opts: ApiClientOptions): ApiClient {
     if (opts.useMocks) {
       await sleep(minDelay + Math.random() * (maxDelay - minDelay));
       // Copy so a screen that mutates the result never changes the shared fixture.
-      return resSchema.parse(JSON.parse(JSON.stringify(mock)));
+      const mockValue = typeof mock === "function" ? (mock as () => Res)() : mock;
+      return resSchema.parse(JSON.parse(JSON.stringify(mockValue)));
     }
 
     const headers: Record<string, string> = { Accept: "application/json", ...(auth ? await authHeaders() : {}) };
@@ -184,7 +195,7 @@ export function createApiClient(opts: ApiClientOptions): ApiClient {
     return parsed.data;
   }
 
-  const post = <Req, Res>(path: string, reqSchema: ZodType<Req>, resSchema: ZodType<Res>, value: Req, mock: Res) =>
+  const post = <Req, Res>(path: string, reqSchema: ZodType<Req>, resSchema: ZodType<Res>, value: Req, mock: Res | (() => Res)) =>
     request({ method: "POST", path, resSchema, mock, body: { schema: reqSchema, value } });
 
   return {
@@ -200,6 +211,28 @@ export function createApiClient(opts: ApiClientOptions): ApiClient {
       sos: (body) => post("/api/emergency/sos", EmergencySosReq, EmergencySosRes, body, mocks.emergencySosMock),
     },
     doctors: { verify: (body) => post("/api/doctors/verify", DoctorVerifyReq, DoctorVerifyRes, body, mocks.doctorsVerifyMock) },
+    plans: {
+      current: () =>
+        request({ method: "GET", path: "/api/plans/me", resSchema: PlansRes, mock: mocks.plansMock }),
+    },
+    waitlist: {
+      // Mock mode uses the store so "already on the list" works within the session.
+      join: async (body) => {
+        const req = JoinWaitlistReq.safeParse(body);
+        if (!req.success) {
+          throw new ApiError("BAD_REQUEST", req.error.issues.map((i) => `${i.path.join(".") || "body"}: ${i.message}`).join("; "), 400);
+        }
+        if (opts.useMocks) {
+          await sleep(minDelay + Math.random() * (maxDelay - minDelay));
+          return JoinWaitlistRes.parse(mocks.joinWaitlistMock(req.data));
+        }
+        return post("/api/waitlist", JoinWaitlistReq, JoinWaitlistRes, req.data, () => mocks.joinWaitlistMock(req.data));
+      },
+    },
+    aiUsage: {
+      today: () =>
+        request({ method: "GET", path: "/api/ai/usage-today", resSchema: AiUsageTodayRes, mock: mocks.aiUsageTodayMock }),
+    },
     prescriptions: { extract: (body) => post("/api/prescriptions/extract", PrescriptionExtractReq, PrescriptionExtractRes, body, mocks.prescriptionsExtractMock) },
     reports: {
       analyze: (body) => post("/api/reports/analyze", ReportAnalyzeReq, ReportAnalyzeRes, body, mocks.reportsAnalyzeMock),

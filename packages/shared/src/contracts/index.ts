@@ -138,6 +138,35 @@ export const AdminDoctorCheckReq = z.object({
   year: z.number().int().min(1950).max(2100).nullable(), note: z.string().max(300),
 });
 
+// ---------- Plans, waitlist and AI usage (v1.3, #305) ----------
+// PROVISIONAL, mock-first: the plans table (plans.features) and the M1/M2 hooks land with
+// Vaibhav's work; these schemas carry the same shape so the screens do not change. The page
+// reads its numbers from the plan's features — never from text typed into a page — and no plan
+// carries a price or a date anywhere.
+export const Plan = z.object({
+  slug: z.enum(["free", "family"]),
+  name: z.string().min(1),
+  features: z.array(z.string().min(1)),
+  ai_uses_per_day: z.number().int().min(0),
+});
+export const PlansRes = z.object({
+  plans: z.array(Plan),
+  current_slug: z.enum(["free", "family"]),
+});
+export const JoinWaitlistReq = z.object({
+  email: z.string().email(),
+  note: z.string().max(200).optional(),
+});
+export const JoinWaitlistRes = z.object({
+  status: z.enum(["joined", "already_on_list"]),
+});
+export const AiUsageTodayRes = z.object({
+  used: z.number().int().min(0),
+  limit: z.number().int().min(0),
+  /** ISO instant when today's count resets (midnight in India). */
+  resets_at: z.string(),
+});
+
 // ---------- POST /api/prescriptions/extract ----------
 // client first uploads the file to bucket "prescriptions" at {user_id}/{uuid}.{ext}
 export const PrescriptionExtractReq = z.object({ file_path: z.string() });
@@ -362,6 +391,11 @@ export type EmergencySosReq = z.infer<typeof EmergencySosReq>;
 export type EmergencySosRes = z.infer<typeof EmergencySosRes>;
 export type DoctorVerifyReq = z.infer<typeof DoctorVerifyReq>;
 export type DoctorVerifyRes = z.infer<typeof DoctorVerifyRes>;
+export type Plan = z.infer<typeof Plan>;
+export type PlansRes = z.infer<typeof PlansRes>;
+export type JoinWaitlistReq = z.infer<typeof JoinWaitlistReq>;
+export type JoinWaitlistRes = z.infer<typeof JoinWaitlistRes>;
+export type AiUsageTodayRes = z.infer<typeof AiUsageTodayRes>;
 export type AdminDoctorCheckReq = z.infer<typeof AdminDoctorCheckReq>;
 export type PrescriptionExtractReq = z.infer<typeof PrescriptionExtractReq>;
 export type PrescriptionExtractRes = z.infer<typeof PrescriptionExtractRes>;
