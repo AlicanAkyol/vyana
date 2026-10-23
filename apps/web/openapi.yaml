@@ -1991,6 +1991,8 @@ components:
                               type:
                                 - number
                                 - "null"
+                            from_device:
+                              type: boolean
                           required:
                             - at
                             - value
