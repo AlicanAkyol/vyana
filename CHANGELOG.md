@@ -9,6 +9,7 @@ All notable changes to Vyana are recorded here. The format follows [Keep a Chang
 - Removed the web agent vendor integration completely: code, tests, scripts, environment variables and the privacy page entry.
 
 ### Added
+- Connected devices on the phone (#327, ADR-073): Profile → Connected devices shows the phone's health store (Health Connect on Android, Apple Health on iOS) with its status, last sync time and the metrics being read, and the Connect / Sync now / Pause / Disconnect actions. A permission explainer (one line per metric, "daily totals and single readings, never second-by-second data") always comes before the system dialog; a denied permission leaves a plain card with "Open settings"; a phone without Health Connect gets a card that opens its Play Store page. "Device health data" is a separate consent item on the consent screen, off by default and linked to the explainer, and connecting is impossible without it. Disconnecting stops syncing and says plainly that readings already synced are not deleted (the real delete follows with PR #349); turning the consent off disconnects every device, and connect and sync refuse without it. Works against a mock store in `@vyana/shared` (`useDeviceConnections`, `useDisconnectDevice`, `syncHealth`) until the W2 sync engine lands.
 - When a plan's daily AI limit is used up, AI features answer with the usual 'try again later' message until midnight (India time).
 
 ### Changed
